@@ -4,6 +4,10 @@ using UnityEngine;
 
 public class PlayerNetwork : NetworkBehaviour
 {
+    private void Awake()
+    {
+        Application.targetFrameRate = 60;
+    }
 
     private NetworkVariable<MyCustomData> randomNumber = new NetworkVariable<MyCustomData>(new MyCustomData
     {
@@ -39,12 +43,14 @@ public class PlayerNetwork : NetworkBehaviour
 
         if (Input.GetKeyDown(KeyCode.T))
         {
-            randomNumber.Value = new MyCustomData
-            {
-                _int = Random.Range(0, 100),
-                _bool = false,
-                message = "our message is a secret message"
-            };
+            TestServerRpc(new ServerRpcParams());
+
+            //randomNumber.Value = new MyCustomData
+            //{
+            //    _int = Random.Range(0, 100),
+            //    _bool = false,
+            //    message = "our message is a secret message"
+            //};
         }
 
         Vector3 moveDir = new Vector3(0, 0, 0);
@@ -56,5 +62,18 @@ public class PlayerNetwork : NetworkBehaviour
 
         float moveSpeed = 3f;
         transform.position += moveSpeed * Time.deltaTime * moveDir;
+    }
+
+    [ServerRpc]
+    private void TestServerRpc(ServerRpcParams serverRpcParams)
+    {
+        Debug.Log("TestServerRpc " + OwnerClientId + "; " + serverRpcParams.Receive.SenderClientId);
+        TestClientRpc();
+    }
+
+    [ClientRpc]
+    private void TestClientRpc()
+    {
+        Debug.Log("TestClientRpc " + OwnerClientId);
     }
 }
