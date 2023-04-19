@@ -4,6 +4,10 @@ using UnityEngine;
 
 public class PlayerNetwork : NetworkBehaviour
 {
+    [SerializeField] private Transform spawnedObjectPrefab;
+
+    private Transform spawnedObjectTransform;
+
     private void Awake()
     {
         Application.targetFrameRate = 60;
@@ -43,7 +47,10 @@ public class PlayerNetwork : NetworkBehaviour
 
         if (Input.GetKeyDown(KeyCode.T))
         {
-            TestServerRpc(new ServerRpcParams());
+            spawnedObjectTransform = Instantiate(spawnedObjectPrefab);
+            spawnedObjectTransform.GetComponent<NetworkObject>().Spawn(true);
+
+            //TestServerRpc(new ServerRpcParams());
 
             //randomNumber.Value = new MyCustomData
             //{
@@ -51,6 +58,11 @@ public class PlayerNetwork : NetworkBehaviour
             //    _bool = false,
             //    message = "our message is a secret message"
             //};
+        }
+
+        if (Input.GetKeyDown(KeyCode.Y))
+        {
+            Destroy(spawnedObjectTransform.gameObject);
         }
 
         Vector3 moveDir = new Vector3(0, 0, 0);
